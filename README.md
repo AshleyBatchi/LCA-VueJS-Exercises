@@ -32,3 +32,49 @@ This project is part of the Life Choices Academy frontend development training.
 ## How to Run the Project
 
 Run these commands inside the project folder:
+npm install
+npm run dev
+
+
+Then open:
+
+
+http://localhost:5173    
+---
+
+## Project Structure
+
+
+week9_ex01_vuejs_cooking_catalogue/
+├── index.html
+├── package.json
+├── vite.config.js
+├── src/
+│ ├── main.js
+│ └── App.vue
+
+
+---
+
+## What I Learned
+
+- Vue 3 basics (components + reactivity)
+- Event handling
+- Conditional rendering
+- List rendering with v-for
+- Computed properties
+- Basic state management
+
+---
+
+## Screenshot
+
+(Add screenshot before submission)
+
+---
+
+## Author
+
+Created by: Ashley Batchi  
+Life Choices Academy — 2026
+
