@@ -1,4 +1,4 @@
-roperty Mini-Listings
+Property Mini-Listings
 Project Overview
 This Vue.js single-page application displays a collection of rental properties. Users can search listings, sort them by price, bookmark favourites, and view availability information in a responsive interface.
 
