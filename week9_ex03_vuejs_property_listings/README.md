@@ -1,5 +1,25 @@
-# Vue 3 + Vite
+roperty Mini-Listings
+Project Overview
+This Vue.js single-page application displays a collection of rental properties. Users can search listings, sort them by price, bookmark favourites, and view availability information in a responsive interface.
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Features
+Dynamic property listings
+Search by title or location
+Sort by price
+Bookmark functionality
+Availability badges
+Responsive layout
+Installation
+npm install
+npm run dev
+Technologies Used
+Vue 3
+Vite
+JavaScript
+HTML
+CSS
+Author
+Ashley Batchi
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+Screenshot
+![Property Listings Interface](./screenshot.png)
