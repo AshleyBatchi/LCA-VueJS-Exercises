@@ -1,157 +1,232 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import RecipeCard from './components/RecipeCard.vue'
 
-// Base array containing default recipe entries
+// Form Fields State
+const title = ref('')
+const description = ref('')
+const ingredients = ref('')
+const steps = ref('')
+const imageUrl = ref('')
+
+// Pre-seeded Recipe List with a reliable live image link
 const recipes = ref([
   {
     id: 1,
-    title: "Traditional South African Bobotie",
-    category: "Dinner",
-    image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=500&auto=format&fit=crop&q=60",
-    description: "A rich, classic South African baked dish featuring spiced minced meat topped with a creamy egg custody layer.",
-    ingredients: ["500g Minced Beef", "1 Cup Milk", "2 Slices White Bread", "1 Chopped Onion", "2 tbsp Curry Powder", "2 Eggs"],
-    instructions: "Soak the bread in milk. Sauté onions and curry powder, then brown the minced beef. Mix in the soaked bread. Transfer the mixture to a greased baking pan, pour beaten egg mixture over the top, and bake at 180°C for roughly 30 minutes."
-  },
-  {
-    id: 2,
-    title: "Buttermilk Pancake Stack",
-    category: "Breakfast",
-    image: "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=500&auto=format&fit=crop&q=60",
-    description: "Perfectly light, fluffy golden breakfast hotcakes best served fresh with warm maple syrup or fruit toppings.",
-    ingredients: ["2 Cups Cake Flour", "2 tbsp Castor Sugar", "2 tsp Baking Powder", "1 Large Egg", "1.5 Cups Buttermilk", "50g Melted Butter"],
-    instructions: "Whisk all dry ingredients in a bowl. Blend wet elements together separately before combining gently. Spoon batter onto a heated non-stick frying pan. Flip once surface bubbles begin to burst and cook until golden brown."
-  },
-  {
-    id: 3,
-    title: "Crisp Parmesan Caesar Salad",
-    category: "Lunch",
-    image: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=500&auto=format&fit=crop&q=60",
-    description: "Fresh, crunchy Romaine lettuce tossed with a rich homemade Caesar dressing, crunchy croutons, and fine cheese shavings.",
-    ingredients: ["1 Large Romaine Lettuce Head", "1/2 Cup Crunchy Croutons", "1/4 Cup Grated Parmesan Cheese", "4 tbsp Creamy Caesar Dressing"],
-    instructions: "Thoroughly rinse and chop the Romaine lettuce. Toss leaves with the dressing in a clean serving bowl. Garnish evenly with the baked bread croutons and fresh parmesan cheese shavings immediately before serving cold."
+    title: 'Classic Garlic Butter Pizza',
+    description: 'A crispy, golden homemade crust brushed with aromatic garlic butter and loaded with melted mozzarella cheese.',
+    ingredients: ['Pizza dough', 'Garlic butter', 'Mozzarella cheese', 'Fresh basil'],
+    steps: 'Roll out dough, spread garlic butter, add cheese, and bake at 220°C for 12 minutes.',
+    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80'
   }
 ])
 
-// Filter tracking reactivity variables
-const searchQuery = ref('')
-const selectedCategory = ref('All')
-const categories = ['All', 'Breakfast', 'Lunch', 'Dinner']
+// Submit Handler
+const handleSubmit = () => {
+  if (!title.value.trim() || !description.value.trim()) return
 
-// Interactive Add Recipe form model variables
-const newTitle = ref('')
-const newCategory = ref('Dinner')
-const newDescription = ref('')
-const newIngredients = ref('')
-const newInstructions = ref('')
+  // Fallback image array to assign a delicious random food look if user leaves it blank
+  const foodPlaceholders = [
+    'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600', // Salad/Healthy bowl
+    'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', // Pizza
+    'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=600', // Pancakes
+    'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=600'  // French Toast
+  ]
+  
+  const selectedImage = imageUrl.value.trim() 
+    ? imageUrl.value.trim() 
+    : foodPlaceholders[Math.floor(Math.random() * foodPlaceholders.length)]
 
-// Computed filtering handler logic
-const filteredRecipes = computed(() => {
-  return recipes.value.filter(recipe => {
-    const matchSearch = recipe.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
-                        recipe.description.toLowerCase().includes(searchQuery.value.toLowerCase())
-    const matchCategory = selectedCategory.value === 'All' || recipe.category === selectedCategory.value
-    return matchSearch && matchCategory
-  })
-})
-
-// Submits a new dish directly to the reactive list array
-const handleAddRecipe = () => {
-  if (!newTitle.value || !newDescription.value) return
-
-  recipes.value.push({
+  // Structure the new recipe item
+  const newRecipe = {
     id: Date.now(),
-    title: newTitle.value,
-    category: newCategory.value,
-    image: "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=500&auto=format&fit=crop&q=60", 
-    description: newDescription.value,
-    ingredients: newIngredients.value.split(',').map(i => i.trim()).filter(Boolean),
-    instructions: newInstructions.value
-  })
+    title: title.value,
+    description: description.value,
+    ingredients: ingredients.value.split(',').map(item => item.trim()).filter(item => item),
+    steps: steps.value,
+    image: selectedImage
+  }
 
-  // Complete field reset clearing process
-  newTitle.value = ''
-  newDescription.value = ''
-  newIngredients.value = ''
-  newInstructions.value = ''
+  // Add to active display stream
+  recipes.value.push(newRecipe)
+
+  // Clear Form Inputs
+  title.value = ''
+  description.value = ''
+  ingredients.value = ''
+  steps.value = ''
+  imageUrl.value = ''
 }
 </script>
 
 <template>
   <div class="app-container">
-    <header class="app-header">
-      <h1>🍳 LCA Culinary Catalogue</h1>
-      <p>Discover delicious recipes, filter through meal options, or add your own creations.</p>
+    <header class="main-header">
+      <h1>🍳 Culinary Recipe Catalogue</h1>
+      <p>Week 9 - Exercise 01 Prototype Layout</p>
     </header>
 
-    <main class="dashboard-grid">
-      <!-- Controls Layout Section Column -->
-      <section class="control-panel">
-        <div class="filter-card">
-          <h3>Search & Filter</h3>
-          <input 
-            v-model="searchQuery" 
-            type="text" 
-            placeholder="Type keyword to find..." 
-            class="input-field"
-          />
-          <div class="category-pill-group">
-            <button 
-              v-for="cat in categories" 
-              :key="cat"
-              @click="selectedCategory = cat"
-              :class="['pill-btn', { active: selectedCategory === cat }]"
-            >
-              {{ cat }}
-            </button>
+    <div class="catalogue-workspace-grid">
+      <section class="form-card-panel">
+        <h2>Add a New Recipe</h2>
+        <form @submit.prevent="handleSubmit" class="recipe-entry-form">
+          <div class="form-input-group">
+            <label>Recipe Title</label>
+            <input v-model="title" type="text" placeholder="e.g., Homemade Garlic Butter Pizza" required />
           </div>
-        </div>
 
-        <div class="filter-card">
-          <h3>Contribute a Recipe</h3>
-          <form @submit.prevent="handleAddRecipe" class="recipe-form">
-            <div class="form-item">
-              <label>Recipe Title</label>
-              <input v-model="newTitle" type="text" required placeholder="e.g., Spicy Chicken Tacos" class="input-field" />
-            </div>
-            <div class="form-item">
-              <label>Meal Category</label>
-              <select v-model="newCategory" class="input-field">
-                <option value="Breakfast">Breakfast</option>
-                <option value="Lunch">Lunch</option>
-                <option value="Dinner">Dinner</option>
-              </select>
-            </div>
-            <div class="form-item">
-              <label>Brief Description</label>
-              <textarea v-model="newDescription" required placeholder="Write a short teaser text..." class="input-field text-area"></textarea>
-            </div>
-            <div class="form-item">
-              <label>Ingredients (Separate entries with commas)</label>
-              <input v-model="newIngredients" type="text" placeholder="Flour, Sugar, Warm Water..." class="input-field" />
-            </div>
-            <div class="form-item">
-              <label>Cooking Steps</label>
-              <textarea v-model="newInstructions" placeholder="Describe the method step by step..." class="input-field text-area"></textarea>
-            </div>
-            <button type="submit" class="submit-action-btn">Add to Catalogue</button>
-          </form>
-        </div>
+          <div class="form-input-group">
+            <label>Brief Description</label>
+            <textarea v-model="description" rows="3" placeholder="Describe your dish..." required></textarea>
+          </div>
+
+          <div class="form-input-group">
+            <label>Ingredients (Separate entries with commas)</label>
+            <input v-model="ingredients" type="text" placeholder="Flour, Sugar, Butter, Love" required />
+          </div>
+
+          <div class="form-input-group">
+            <label>Cooking Steps</label>
+            <textarea v-model="steps" rows="3" placeholder="1. Mix ingredients. 2. Bake until golden..." required></textarea>
+          </div>
+
+          <div class="form-input-group">
+            <label>Custom Image URL (Optional - Leaves blank for automatic placeholder)</label>
+            <input v-model="imageUrl" type="url" placeholder="https://example.com/food-pic.jpg" />
+          </div>
+
+          <button type="submit" class="submit-action-btn">Add to Catalogue</button>
+        </form>
       </section>
 
-      <!-- Active Grid Cards List View -->
-      <section class="display-panel">
-        <div v-if="filteredRecipes.length === 0" class="empty-layout-alert">
-          <p>No culinary matches found matching your keyword filters.</p>
+      <section class="display-stream-panel">
+        <h2>Your Saved Recipes</h2>
+        <div v-if="recipes.length === 0" class="empty-notice">
+          <p>No recipes logged in the catalogue yet.</p>
         </div>
-        <div v-else class="catalogue-responsive-grid">
-          <RecipeCard 
-            v-for="recipe in filteredRecipes" 
-            :key="recipe.id" 
-            :recipe="recipe" 
-          />
+        <div v-else class="recipe-cards-flex-grid">
+          <RecipeCard v-for="recipe in recipes" :key="recipe.id" :recipe="recipe" />
         </div>
       </section>
-    </main>
+    </div>
   </div>
 </template>
+
+<style>
+:root {
+  --surface-bg: #ffffff;
+  --body-bg: #f1f5f9;
+  --text-primary: #1e293b;
+  --text-muted: #64748b;
+  --brand-primary: #2563eb;
+  --border-element: #cbd5e1;
+}
+
+body {
+  margin: 0;
+  background-color: var(--body-bg);
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text-primary);
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.main-header {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--border-element);
+  padding-bottom: 1rem;
+}
+
+.main-header h1 { margin: 0; font-size: 2rem; font-weight: 800; }
+.main-header p { margin: 0.25rem 0 0 0; color: var(--text-muted); font-weight: 500; }
+
+.catalogue-workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .catalogue-workspace-grid {
+    grid-template-columns: 420px 1fr;
+  }
+}
+
+.form-card-panel {
+  background: var(--surface-bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.form-card-panel h2, .display-stream-panel h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.recipe-entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-input-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-input-group input, .form-input-group textarea {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border-element);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.form-input-group input:focus, .form-input-group textarea:focus {
+  outline: 2px solid var(--brand-primary);
+  border-color: transparent;
+}
+
+.submit-action-btn {
+  background: var(--brand-primary);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.submit-action-btn:hover { background: #1d4ed8; }
+
+.recipe-cards-flex-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.empty-notice {
+  background: #e2e8f0;
+  padding: 3rem;
+  text-align: center;
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+</style>
